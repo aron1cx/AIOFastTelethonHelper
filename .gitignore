@@ -1,0 +1,29 @@
+#--- Python ---
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+
+# --- Build / packaging ---
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+
+# --- uv ---
+.uv/
+.uv_cache/
+.venv/
+uv.lock
+.python-version
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+
+# --- other ---
+self.session
+main.py

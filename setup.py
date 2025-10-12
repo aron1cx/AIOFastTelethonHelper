@@ -5,9 +5,9 @@ with open("README.md", "r") as fh:
 
 
 setup(
-    name="FastTelethonhelper",
-    version="1.0.2",
-    description="Make Telethon files upload/download faster",
+    name="AIOFastTelethonHelper",
+    version="1.0.0",
+    description="Library for fully asynchronous and parallel file upload/download in Telethon, without blocking the event loop",
     packages=find_packages(),
     install_requires=["telethon", "telethon-tgcrypto"],
     classifiers=[
@@ -19,7 +19,7 @@ setup(
     ],
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/MiyukiKun/FastTelethonhelper",
-    author="MiyukiKun",
-    author_email="hardikmajethia9529@gmail.com"
+    url="https://github.com/Aron1cX/AIOFastTelethonHelper",
+    author="Aron1cX",
+    author_email="aron1cx.dev@gmail.com"
 )

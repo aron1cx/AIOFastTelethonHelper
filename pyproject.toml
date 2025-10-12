@@ -1,0 +1,16 @@
+[project]
+name = "aiofasttelethonhelper"
+version = "1.0.0"
+description = "Fully async and parallel file upload/download in Telethon, without blocking the event loop."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Aron1cX", email = "aron1cx.dev@gmail.com"}]
+requires-python = ">=3.9"
+dependencies = [
+    "setuptools>=80.9.0",
+    "aiofiles>=25.1.0",
+    "telethon>=1.41.2",
+]
+[project.urls]
+Homepage = "https://github.com/aron1cx/AIOFastTelethonHelper"
+Source = "https://github.com/aron1cx/AIOFastTelethonHelper"
