@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aiofasttelethonhelper"
-version = "1.0.0"
+version = "0.1.0"
 description = "Fully async and parallel file upload/download in Telethon, without blocking the event loop."
 keywords = ["telethon", "fasttelethonhelper", "aio", "async", "telegram", "selfbot", "userbot"]
 readme = "README.md"
