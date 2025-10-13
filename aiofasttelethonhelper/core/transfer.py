@@ -21,7 +21,8 @@ from typing import (
 from .senders import DownloadSender, UploadSender
 from .types import TypeLocation
 
-import asyncio, math
+import asyncio
+import math
 
 
 class ParallelTransferrer:

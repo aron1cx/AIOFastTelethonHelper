@@ -1,22 +1,16 @@
 from telethon.tl.functions.upload import (
     SaveBigFilePartRequest,
     SaveFilePartRequest,
-    GetFileRequest
+    GetFileRequest,
 )
 
 from telethon.network import MTProtoSender
 from telethon import TelegramClient
 
-from typing import (
-    Awaitable,
-    Optional,
-    Union
-)
+from typing import Awaitable, Optional, Union
 
 from .types import TypeLocation
 import asyncio
-
-
 
 
 class DownloadSender:
@@ -77,12 +71,12 @@ class UploadSender:
         self.parts = parts
         self.client = client
         self.sender = sender
-        
+
         if big:
             self.request = SaveBigFilePartRequest(file_id, index, parts, b"")
         else:
             self.request = SaveFilePartRequest(file_id, index, b"")
-            
+
         self.stride = stride
         self.previous = None
         self.loop = loop
@@ -90,7 +84,7 @@ class UploadSender:
     async def next(self, data: bytes) -> None:
         if self.previous:
             await self.previous
-            
+
         self.previous = self.loop.create_task(self._next(data))
 
     async def _next(self, data: bytes) -> None:
@@ -101,7 +95,5 @@ class UploadSender:
     async def disconnect(self) -> None:
         if self.previous:
             await self.previous
-            
+
         return await self.sender.disconnect()
-
-

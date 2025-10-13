@@ -4,7 +4,8 @@ from telethon.types import Message
 from .methods import download_file, upload_file
 from typing import Optional, Callable
 
-import aiofiles, os
+import aiofiles
+import os
 
 
 async def fast_download(
@@ -17,7 +18,9 @@ async def fast_download(
     if os.path.splitext(file_path)[1]:
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
     else:
-        file_path = os.path.join(file_path, file_name or message.file.name or "unknown.bin")
+        file_path = os.path.join(
+            file_path, file_name or message.file.name or "unknown.bin"
+        )
         os.makedirs(file_path, exist_ok=True)
 
     async with aiofiles.open(file_path, "wb") as out:

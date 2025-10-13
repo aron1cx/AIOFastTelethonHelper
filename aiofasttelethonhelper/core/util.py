@@ -18,4 +18,3 @@ def human_readable_size(size, decimal_places=2):
         size /= 1024.0
 
     return f"{round(size, decimal_places)}{unit}"
-

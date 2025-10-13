@@ -11,11 +11,13 @@ from telethon.tl.types import (
 from .transfer import ParallelTransferrer
 from typing import Optional, Callable
 
-from .transfer import ParallelTransferrer
 from .util import read_buffer_chunks
 from .types import TypeLocation
 
-import hashlib, inspect, logging, os
+import hashlib
+import inspect
+import logging
+import os
 import time
 
 logger = logging.getLogger("AIOFastTelethonHelper")
