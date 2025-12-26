@@ -1,11 +1,11 @@
+import os
+from typing import Callable, Optional
+
+import aiofiles
 from telethon import TelegramClient
 from telethon.types import Message
 
 from .methods import download_file, upload_file
-from typing import Optional, Callable
-
-import aiofiles
-import os
 
 
 async def fast_download(
