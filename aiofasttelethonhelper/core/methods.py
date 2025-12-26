@@ -1,24 +1,23 @@
-from aiofiles.threadpool.binary import AsyncBufferedReader, AsyncBufferedIOBase
-
-from telethon import TelegramClient
-from telethon.utils import get_input_location
-from telethon.helpers import generate_random_long
-from telethon.tl.types import (
-    TypeInputFile,
-    InputFileBig,
-    InputFile,
-)
-from .transfer import ParallelTransferrer
-from typing import Optional, Callable
-
-from .util import read_buffer_chunks
-from .types import TypeLocation
-
 import hashlib
 import inspect
 import logging
 import os
 import time
+from typing import Callable, Optional
+
+from aiofiles.threadpool.binary import AsyncBufferedIOBase, AsyncBufferedReader
+from telethon import TelegramClient
+from telethon.helpers import generate_random_long
+from telethon.tl.types import (
+    InputFile,
+    InputFileBig,
+    TypeInputFile,
+)
+from telethon.utils import get_input_location
+
+from .transfer import ParallelTransferrer
+from .types import TypeLocation
+from .util import read_buffer_chunks
 
 logger = logging.getLogger("AIOFastTelethonHelper")
 
@@ -51,6 +50,20 @@ async def download_file(
                     pass
 
     return out
+
+
+async def download_file_stream(
+    client: TelegramClient,
+    location: TypeLocation,
+):
+    file_size = location.size
+    dc_id, input_location = get_input_location(location)
+
+    downloader = ParallelTransferrer(client, dc_id)
+    downloaded = downloader.download(input_location, file_size)
+
+    async for chunk in downloaded:
+        yield chunk
 
 
 async def upload_file(
