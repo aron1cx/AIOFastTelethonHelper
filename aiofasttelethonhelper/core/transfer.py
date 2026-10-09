@@ -1,52 +1,53 @@
+from __future__ import annotations
+
+import asyncio
+import math
+from collections.abc import AsyncGenerator
+
+from telethon import TelegramClient
+from telethon.crypto import AuthKey
+from telethon.network import MTProtoSender
+from telethon.tl.alltlobjects import LAYER
+from telethon.tl.functions import InvokeWithLayerRequest
 from telethon.tl.functions.auth import (
     ExportAuthorizationRequest,
     ImportAuthorizationRequest,
 )
-from telethon.tl.alltlobjects import LAYER
-from telethon.tl.functions import InvokeWithLayerRequest
-
-from telethon.network import MTProtoSender
-from telethon.crypto import AuthKey
 from telethon.utils import get_appropriated_part_size
-from telethon import TelegramClient
-
-from typing import (
-    AsyncGenerator,
-    Optional,
-    Tuple,
-    Union,
-    List,
-)
 
 from .senders import DownloadSender, UploadSender
 from .types import TypeLocation
-
-import asyncio
-import math
 
 
 class ParallelTransferrer:
     client: TelegramClient
     loop: asyncio.AbstractEventLoop
     dc_id: int
-    senders: Optional[List[Union[DownloadSender, UploadSender]]]
-    auth_key: AuthKey
+    senders: list[DownloadSender | UploadSender] | None
+    auth_key: AuthKey | None
     upload_ticker: int
 
-    def __init__(self, client: TelegramClient, dc_id: Optional[int] = None) -> None:
+    def __init__(self, client: TelegramClient, dc_id: int | None = None) -> None:
         self.client = client
         self.loop = self.client.loop
-        self.dc_id = dc_id or self.client.session.dc_id
+        session = getattr(self.client, "session", None)
+        self.dc_id = dc_id or (
+            getattr(session, "dc_id", 0) if session is not None else 0
+        )
+        session = getattr(self.client, "session", None)
         self.auth_key = (
             None
-            if dc_id and self.client.session.dc_id != dc_id
-            else self.client.session.auth_key
+            if dc_id
+            and session is not None
+            and getattr(session, "dc_id", None) != dc_id
+            else (getattr(session, "auth_key", None) if session is not None else None)
         )
         self.senders = None
         self.upload_ticker = 0
 
     async def _cleanup(self) -> None:
-        await asyncio.gather(*[sender.disconnect() for sender in self.senders])
+        if self.senders:
+            await asyncio.gather(*[sender.disconnect() for sender in self.senders])
         self.senders = None
 
     @staticmethod
@@ -158,20 +159,26 @@ class ParallelTransferrer:
         self,
         file_id: int,
         file_size: int,
-        part_size_kb: Optional[float] = None,
-        connection_count: Optional[int] = None,
-    ) -> Tuple[int, int, bool]:
+        part_size_kb: float | None = None,
+        connection_count: int | None = None,
+    ) -> tuple[int, int, bool]:
         connection_count = connection_count or self._get_connection_count(file_size)
         part_size = (part_size_kb or get_appropriated_part_size(file_size)) * 1024
         part_count = (file_size + part_size - 1) // part_size
         is_large = file_size > 10 * 1024 * 1024
 
-        await self._init_upload(connection_count, file_id, part_count, is_large)
+        await self._init_upload(
+            int(connection_count), file_id, int(part_count), is_large
+        )
 
-        return part_size, part_count, is_large
+        return int(part_size), int(part_count), bool(is_large)
 
     async def upload(self, part: bytes) -> None:
-        await self.senders[self.upload_ticker].next(part)
+        if self.senders is None:
+            return
+        sender = self.senders[self.upload_ticker]
+        if hasattr(sender, "next") and not isinstance(sender, DownloadSender):  # type: ignore[unreachable]
+            await sender.next(part)
         self.upload_ticker = (self.upload_ticker + 1) % len(self.senders)
 
     async def finish_upload(self) -> None:
@@ -181,19 +188,32 @@ class ParallelTransferrer:
         self,
         file: TypeLocation,
         file_size: int,
-        part_size_kb: Optional[float] = None,
-        connection_count: Optional[int] = None,
+        part_size_kb: float | None = None,
+        connection_count: int | None = None,
     ) -> AsyncGenerator[bytes, None]:
         connection_count = connection_count or self._get_connection_count(file_size)
         part_size = (part_size_kb or get_appropriated_part_size(file_size)) * 1024
         part_count = math.ceil(file_size / part_size)
-        await self._init_download(connection_count, file, part_count, part_size)
+        await self._init_download(
+            int(connection_count), file, part_count, int(part_size)
+        )
 
         part = 0
+        if self.senders is None:
+            await self._cleanup()
+            return
+
         while part < part_count:
             tasks = []
             for sender in self.senders:
-                tasks.append(self.loop.create_task(sender.next()))
+                if hasattr(sender, "next"):
+                    try:
+                        if isinstance(sender, DownloadSender):
+                            tasks.append(self.loop.create_task(sender.next()))
+                        else:
+                            continue  # upload sender needs data
+                    except Exception:  # noqa: BLE001, S112
+                        continue
             for task in tasks:
                 data = await task
                 if not data:

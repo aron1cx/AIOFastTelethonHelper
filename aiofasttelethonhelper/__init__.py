@@ -6,6 +6,8 @@ Based on `FastTelethonhelper` by original author `MiyukiKun`.
 Modified and maintained by `Aron1cX`.
 """
 
+from __future__ import annotations
+
 from .core import fast_download, fast_upload
 
 __all__ = ["fast_download", "fast_upload"]

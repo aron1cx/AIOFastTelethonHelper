@@ -1,8 +1,13 @@
-from .core.util import human_readable_size
+from __future__ import annotations
+
 import time
 
+from .core.util import human_readable_size
 
-def print_progress_bar(done: int, total: int, start_time: float, bar_length: int = 20):
+
+def print_progress_bar(
+    done: int, total: int, start_time: float, bar_length: int = 20
+) -> None:
     percent = done / total if total else 0
     percent_display = round(percent * 100, 1)
 

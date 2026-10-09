@@ -17,25 +17,27 @@ from telethon import TelegramClient
 
 client = TelegramClient("session", API_ID, API_HASH)
 
+
 def custom_progress_callback(**kwargs):
-  done, total = kwargs.get('done'), kwargs.get('total')
-  print(f"{done}/{total}")
+    done, total = kwargs.get("done"), kwargs.get("total")
+    print(f"{done}/{total}")
+
 
 async def main():
-  async with client:
-      file_path = await fast_download(
-        client=client, 
-        message=message, 
-        file_path="./downloads", # or ./downloads/file.txt
-        progress_callback=print_progress_bar
-      )
+    async with client:
+        file_path = await fast_download(
+            client=client,
+            message=message,
+            file_path="./downloads",  # or ./downloads/file.txt
+            progress_callback=print_progress_bar,
+        )
 
-      file = await fast_upload(
-        client=client,
-        file_path="input.txt",
-        progress_callback=custom_progress_callback
-      )
-      await client.send_file("me", file)
+        file = await fast_upload(
+            client=client,
+            file_path="input.txt",
+            progress_callback=custom_progress_callback,
+        )
+        await client.send_file("me", file)
 ```
 
 ## ❤️ Credits

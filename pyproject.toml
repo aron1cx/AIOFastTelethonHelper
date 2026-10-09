@@ -6,21 +6,25 @@ build-backend = "setuptools.build_meta"
 name = "aiofasttelethonhelper"
 version = "0.1.3"
 description = "Fully async and parallel file upload/download in Telethon, without blocking the event loop."
-keywords = ["telethon", "fasttelethonhelper", "aio", "async", "telegram", "selfbot", "userbot"]
+keywords = [
+    "telethon",
+    "fasttelethonhelper",
+    "aio",
+    "async",
+    "telegram",
+    "selfbot",
+    "userbot",
+]
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-authors = [{ name = "Aron1cX", email = "aron1cx.dev@gmail.com"}]
+authors = [{ name = "Aron1cX", email = "aron1cx.dev@gmail.com" }]
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
-dependencies = [
-    "aiofiles==24.1.0",
-    "setuptools>=80.9.0",
-    "telethon>=1.41.2",
-]
+dependencies = ["aiofiles==24.1.0", "setuptools>=80.9.0", "telethon>=1.41.2"]
 [project.urls]
 Homepage = "https://github.com/aron1cx/AIOFastTelethonHelper"
 Issues = "https://github.com/aron1cx/AIOFastTelethonHelper/issues"

@@ -1,17 +1,17 @@
-from typing import Union
+from __future__ import annotations
+
 from telethon.tl.types import (
-    InputPeerPhotoFileLocation,
-    InputDocumentFileLocation,
-    InputPhotoFileLocation,
-    InputFileLocation,
     Document,
+    InputDocumentFileLocation,
+    InputFileLocation,
+    InputPeerPhotoFileLocation,
+    InputPhotoFileLocation,
 )
 
-
-TypeLocation = Union[
-    InputPeerPhotoFileLocation,
-    InputDocumentFileLocation,
-    InputPhotoFileLocation,
-    InputFileLocation,
-    Document,
-]
+TypeLocation = (
+    InputPeerPhotoFileLocation
+    | InputDocumentFileLocation
+    | InputPhotoFileLocation
+    | InputFileLocation
+    | Document
+)

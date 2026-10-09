@@ -1,16 +1,17 @@
+from __future__ import annotations
+
+import asyncio
+from collections.abc import Awaitable
+
+from telethon import TelegramClient
+from telethon.network import MTProtoSender
 from telethon.tl.functions.upload import (
+    GetFileRequest,
     SaveBigFilePartRequest,
     SaveFilePartRequest,
-    GetFileRequest,
 )
 
-from telethon.network import MTProtoSender
-from telethon import TelegramClient
-
-from typing import Awaitable, Optional, Union
-
 from .types import TypeLocation
-import asyncio
 
 
 class DownloadSender:
@@ -36,7 +37,7 @@ class DownloadSender:
         self.stride = stride
         self.remaining = count
 
-    async def next(self) -> Optional[bytes]:
+    async def next(self) -> bytes | None:
         if not self.remaining:
             return None
         result = await self.client._call(self.sender, self.request)
@@ -51,10 +52,10 @@ class DownloadSender:
 class UploadSender:
     client: TelegramClient
     sender: MTProtoSender
-    request: Union[SaveFilePartRequest, SaveBigFilePartRequest]
+    request: SaveFilePartRequest | SaveBigFilePartRequest
     parts: int
     stride: int
-    previous: Optional[asyncio.Task]
+    previous: asyncio.Task | None
     loop: asyncio.AbstractEventLoop
 
     def __init__(
